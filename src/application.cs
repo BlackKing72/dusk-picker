@@ -21,6 +21,7 @@ public class Application : IDisposable
 
         Raylib.SetWindowState(ConfigFlags.BorderlessWindowMode);
         Raylib.SetWindowPosition(0, 0);
+        Raylib.EnableEventWaiting();
 
         layerManager = new LayerManager();
         guiManager = new GuiManager(false);
