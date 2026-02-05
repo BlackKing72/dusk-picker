@@ -19,7 +19,7 @@ public static class Embedded
     /// </code>
     /// </remarks>
     public static readonly string RootPath =
-        Path.GetFileName(Environment.ProcessPath)
+        Path.GetFileNameWithoutExtension(Environment.ProcessPath)
         ?? throw new ArgumentNullException(
             nameof(RootPath),
             "Can't find the root path for loading embedded resources."
