@@ -1,4 +1,6 @@
 <div align="center">
+<img width="128" height="128" alt="Dusk picker icon" src="https://github.com/user-attachments/assets/78b82181-39ca-43b4-89d7-fd282c0f19a9" />
+
 <h1>Dusk Picker</h1>
 <p>A simple desktop color picker tool inspired by the Powertoyz Color Picker.</p>
 </div>
