@@ -134,7 +134,7 @@ dotnet publish
 
 or
 
-```
+```sh
 dotnet run -- --server
 ```
 
@@ -145,9 +145,21 @@ dotnet run -- --server
 
 ## Cross-Compile
 
-To cross-compile you must specify the target RID. See the RID catalog in https://learn.microsoft.com/en-us/dotnet/core/rid-catalog#known-rids
+To cross-compile you must disable AOT compilation on the `.csproj` 
 
+```xml
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Comment this line or set it to false -->
+    <PublishAot>true</PublishAot>
+  </PropertyGroup>
+</Project>
 ```
+
+Then specify the target RID of the platform. See the RID catalog in https://learn.microsoft.com/en-us/dotnet/core/rid-catalog#known-rids
+
+```sh
 dotnet build -r linux-x64
+# or
 dotnet publish -r win-x64
 ```
