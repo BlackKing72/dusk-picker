@@ -10,6 +10,8 @@
     <SelfContained>true</SelfContained>
     <!-- Enable ahead of time compilation i.e native builds -->
     <PublishAot>true</PublishAot>
+    <!-- Set application icon (seems to only work on Windows) -->
+    <ApplicationIcon>assets/dusk.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.4.0" />

@@ -17,8 +17,12 @@ public class Application : IDisposable
         Raylib.SetConfigFlags(ConfigFlags.TopmostWindow);
 
         Raylib.InitWindow(960, 540, "Color Picker");
-        Raylib.SetExitKey(KeyboardKey.F10);
 
+        var iconData = Embedded.ReadBytes("assets/dusk.png");
+        var iconImage = Raylib.LoadImageFromMemory(".png", iconData);
+        Raylib.SetWindowIcon(iconImage);
+
+        Raylib.SetExitKey(KeyboardKey.F10);
         Raylib.SetWindowState(ConfigFlags.BorderlessWindowMode);
         Raylib.SetWindowPosition(0, 0);
         Raylib.EnableEventWaiting();
