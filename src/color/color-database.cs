@@ -2,9 +2,9 @@ using System.Collections.Immutable;
 
 namespace Black.DuskPicker;
 
-public readonly struct ColorDatabase(ImmutableList<ColorPacked> colors)
+public readonly partial struct ColorDatabase(ColorPacked[] colors)
 {
-    public readonly ImmutableList<ColorPacked> Colors { get; init; } = colors;
+    public readonly ColorPacked[] Colors { get; init; } = colors;
 
     /// <summary> Colors based from Powertoys Color Picker. </summary>
     /// <remarks>

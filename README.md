@@ -115,6 +115,7 @@ dusk-picker --help    # shows a help message.
 dusk-picker --open    # open picker window.
 dusk-picker --close   # close picker window.
 dusk-picker --quit    # close picker window and shutdown the server.
+dusk-picker --palette # sets the palette used to get color names <Web|Toyz|Xkcd>.
 
 # sets the port used by the server.
 # make sure to change the port on both, server and client.

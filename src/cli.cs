@@ -9,8 +9,11 @@ public static class CLI
     public record class Result(
         bool IsServer = true,
         int Port = 8743,
-        ServerCommand Command = default
+        ServerCommand Command = default,
+        PickerPalette Palette = PickerPalette.Xkcd
     );
+
+
 
     public class CustomHelpAction(HelpAction helpAction) : SynchronousCommandLineAction
     {
@@ -43,10 +46,16 @@ public static class CLI
         {
             Description = "Shutdown the server instance, and closes the window.",
         };
-        Option<int?> portOption = new("--port", "-p")
+        Option<int?> portOption = new("--port", "-P")
         {
             Description = "The port used to sending and receiving commands.",
             DefaultValueFactory = parseResult => null,
+        };
+
+        Option<PickerPalette?> paletteOption = new("--palette", "-p")
+        {
+            Description = "The color palette to use when getting color names",
+            DefaultValueFactory = parseResult => PickerPalette.Xkcd,
         };
 
         RootCommand rootCommand = new(
@@ -65,6 +74,7 @@ public static class CLI
         rootCommand.Options.Add(showOption);
         rootCommand.Options.Add(hideOption);
         rootCommand.Options.Add(quitOption);
+        rootCommand.Options.Add(paletteOption);
 
         for (int i = 0; i < rootCommand.Options.Count; i++)
         {
@@ -86,6 +96,9 @@ public static class CLI
 
                 if (parseResult.GetValue(portOption) is int port)
                     result = result with { Port = port };
+
+                if (parseResult.GetValue(paletteOption) is PickerPalette palette)
+                    result = result with { Palette = palette };
 
                 var optionsToCommandMap = new Dictionary<Option<bool>, ServerCommand>()
                 {

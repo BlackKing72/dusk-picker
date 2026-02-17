@@ -17,15 +17,18 @@ bool isServer = result.IsServer;
 
 if (isServer)
 {
-    await RunAsServer(result.Command, result.Port);
+    await RunAsServer(result);
 }
 else
 {
-    await RunAsClient(result.Command, result.Port);
+    await RunAsClient(result);
 }
 
-static async Task RunAsClient(ServerCommand command, int port = 8743)
+static async Task RunAsClient(CLI.Result result)
 {
+    ServerCommand command = result.Command;
+    int port = result.Port;
+
     Console.WriteLine($"Running as client...");
     Console.WriteLine($"  send commands {command} to server @{IPAddress.Loopback}:{port}");
 
@@ -33,13 +36,19 @@ static async Task RunAsClient(ServerCommand command, int port = 8743)
     await client.SendCommandAsync(command);
 }
 
-static async Task RunAsServer(ServerCommand command, int port = 8743)
+static async Task RunAsServer(CLI.Result result)
 {
+    ServerCommand command = result.Command;
+    int port = result.Port;
+
     Server server = new(IPAddress.Loopback, port);
     Console.WriteLine($"Running as server...");
     Console.WriteLine($"  listening on {IPAddress.Loopback}:{port}");
 
-    using Picker app = new();
+    using Picker app = new(new PickerOptions()
+    {
+        Palette = result.Palette
+    });
 
     server.CommandReceived += (command) =>
     {

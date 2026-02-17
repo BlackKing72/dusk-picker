@@ -5,7 +5,7 @@ using Raylib_cs;
 
 namespace Black.DuskPicker;
 
-public class ColorInfoUILayer : Layer
+public class ColorInfoUILayer(PickerPalette colorPalette = PickerPalette.Xkcd) : Layer
 {
     public event Action? OnClose;
     public event Action? OnQuit;
@@ -15,6 +15,7 @@ public class ColorInfoUILayer : Layer
     public Vector2 Position { get; set; } = Vector2.Zero;
     public Color Color { get; set; } = Color.White;
 
+    private ColorDatabase colorDatabase = colorPalette.AsDatabase;
     private ColorPacked similarColor = ColorPacked.White;
     private bool wasOpenLastFrame;
     private bool requestedOpen;
@@ -22,7 +23,7 @@ public class ColorInfoUILayer : Layer
     public override void OnAttach()
     {
         similarColor = ColorUtils.GetPerceptualSimilarColor(
-            ColorDatabase.Toyz,
+            colorDatabase,
             Color.R,
             Color.G,
             Color.B
@@ -161,7 +162,7 @@ public class RGB255ColorParser : ColorParser
 
     public override string ToDisplayString(Color color)
     {
-        return $"{color.R, 3}, {color.G, 3}, {color.B, 3}";
+        return $"{color.R,3}, {color.G,3}, {color.B,3}";
     }
 }
 

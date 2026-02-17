@@ -8,15 +8,17 @@ public class Picker : Application
     private readonly ScreenshotProviderLayer screenshotProvider;
 
     private readonly ColorInfoUILayer colorLayer;
-    private readonly PickerOptions options = new();
+    private readonly PickerOptions options;
 
     private Cursor.State lastCursorState;
 
-    public Picker()
+    public Picker(PickerOptions? options = null)
         : base()
     {
+        this.options = options ?? new PickerOptions();
+
         screenshotProvider = new();
-        colorLayer = new();
+        colorLayer = new(this.options.Palette);
 
         BackgroundLayer backgroundLayer = new(screenshotProvider);
         MagnifierLayer magnifierLayer = new(screenshotProvider, options);
