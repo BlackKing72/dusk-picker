@@ -16,7 +16,7 @@ public class Picker : Application
         InputHandlerLayer inputHandlerLayer = new(stateProvider);
         BackgroundLayer backgroundLayer = new(screenshotProvider);
         MagnifierLayer magnifierLayer = new(stateProvider, screenshotProvider, pickerOptions);
-        ColorInfoUILayer colorLayer = new(stateProvider);
+        ColorInfoLayer colorLayer = new(stateProvider);
 
         layerManager.PushLayer(inputHandlerLayer);
         layerManager.PushLayer(backgroundLayer);
