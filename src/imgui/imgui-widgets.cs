@@ -100,6 +100,7 @@ public static class ImGuiWidgets
 
         Vector2 regionStart =
             parent is Parent.Window ? ImGui.GetWindowPos() : ImGui.GetCursorScreenPos();
+
         Vector2 regionSize =
             parent is Parent.Window ? ImGui.GetWindowSize() : ImGui.GetContentRegionAvail();
 
@@ -116,7 +117,9 @@ public static class ImGuiWidgets
             _ or Aligment.Center => regionStart.X + ((regionSize.X * 0.5f) - (maxItemSize * 0.5f)),
         };
 
+        Vector2 cursorScreenPos = ImGui.GetCursorScreenPos();
         ImGui.SetCursorScreenPos(new(x, y));
+
         float offset = maxItemSize / actions.Length;
 
         for (int i = 0; i < actions.Length; i++)
@@ -126,6 +129,8 @@ public static class ImGuiWidgets
 
             actions[i]();
         }
+
+        ImGui.SetCursorScreenPos(cursorScreenPos);
     }
 
     public static void Icon(string icon)
