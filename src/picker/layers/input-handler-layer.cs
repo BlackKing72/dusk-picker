@@ -2,13 +2,13 @@ using Raylib_cs;
 
 namespace Black.DuskPicker;
 
-public class InputHandlerLayer(Picker picker) : Layer
+public class InputHandlerLayer(StateProvider stateProvider) : Layer
 {
     public override bool OnUpdate()
     {
         if (Raylib.IsKeyPressed(KeyboardKey.Escape))
         {
-            picker.HideWindow();
+            stateProvider.RequestQuit();
         }
 
         return false;

@@ -3,7 +3,7 @@ using Raylib_cs;
 
 namespace Black.DuskPicker;
 
-public class BackgroundLayer(ScreenshotProviderLayer screenshotProvider) : Layer
+public class BackgroundLayer(ScreenshotProvider screenshotProvider) : Layer
 {
     public override void OnRender()
     {

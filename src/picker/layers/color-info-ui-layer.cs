@@ -5,29 +5,22 @@ using Raylib_cs;
 
 namespace Black.DuskPicker;
 
-public class ColorInfoUILayer(PickerPalette colorPalette = PickerPalette.Xkcd) : Layer
+public class ColorInfoUILayer(StateProvider stateProvider) : Layer
 {
-    public event Action? OnClose;
-    public event Action? OnQuit;
-
     private readonly Vector2 Offset = Vector2.One * 16;
 
     public Vector2 Position { get; set; } = Vector2.Zero;
     public Color Color { get; set; } = Color.White;
 
-    private ColorDatabase colorDatabase = colorPalette.AsDatabase;
     private ColorPacked similarColor = ColorPacked.White;
     private bool wasOpenLastFrame;
     private bool requestedOpen;
 
     public override void OnAttach()
     {
-        similarColor = ColorUtils.GetPerceptualSimilarColor(
-            colorDatabase,
-            Color.R,
-            Color.G,
-            Color.B
-        );
+        Color = stateProvider.PickColor;
+        Position = stateProvider.PickPosition;
+        similarColor = stateProvider.SimilarColor;
 
         requestedOpen = true;
     }
@@ -142,7 +135,10 @@ public class ColorInfoUILayer(PickerPalette colorPalette = PickerPalette.Xkcd) :
         if (isCurrentPopup)
             ImGui.CloseCurrentPopup();
 
-        Action? callback = requestQuitCommand ? OnQuit : OnClose;
+        Action? callback = requestQuitCommand
+            ? stateProvider.RequestQuit
+            : stateProvider.DismissColor;
+
         callback?.Invoke();
     }
 }
@@ -162,7 +158,7 @@ public class RGB255ColorParser : ColorParser
 
     public override string ToDisplayString(Color color)
     {
-        return $"{color.R,3}, {color.G,3}, {color.B,3}";
+        return $"{color.R, 3}, {color.G, 3}, {color.B, 3}";
     }
 }
 

@@ -1,82 +1,42 @@
-using System.Numerics;
-using Raylib_cs;
-
 namespace Black.DuskPicker;
 
 public class Picker : Application
 {
-    private readonly ScreenshotProviderLayer screenshotProvider;
-
-    private readonly ColorInfoUILayer colorLayer;
-    private readonly PickerOptions options;
-
-    private Cursor.State lastCursorState;
+    private readonly ScreenshotProvider screenshotProvider;
+    private readonly StateProvider stateProvider;
 
     public Picker(PickerOptions? options = null)
         : base()
     {
-        this.options = options ?? new PickerOptions();
+        PickerOptions pickerOptions = options ?? new PickerOptions();
 
         screenshotProvider = new();
-        colorLayer = new(this.options.Palette);
+        stateProvider = new(pickerOptions.Palette);
 
+        InputHandlerLayer inputHandlerLayer = new(stateProvider);
         BackgroundLayer backgroundLayer = new(screenshotProvider);
-        MagnifierLayer magnifierLayer = new(screenshotProvider, options);
+        MagnifierLayer magnifierLayer = new(stateProvider, screenshotProvider, pickerOptions);
+        ColorInfoUILayer colorLayer = new(stateProvider);
 
-        layerManager.PushLayer(new InputHandlerLayer(this));
-        layerManager.PushLayer(screenshotProvider);
+        layerManager.PushLayer(inputHandlerLayer);
         layerManager.PushLayer(backgroundLayer);
         layerManager.PushLayer(magnifierLayer);
 
-        colorLayer.OnQuit += OnQuitColorLayer;
-        colorLayer.OnClose += OnCloseColorLayer;
-        magnifierLayer.PickedColor += OnOpenColorLayer;
+        stateProvider.OnColorDismissed += () => layerManager.PopLayer(colorLayer);
+        stateProvider.OnColorSelected += () => layerManager.PushLayer(colorLayer);
+        stateProvider.OnQuitRequested += this.HideWindow;
 
-        EventSystem.OnEvent += OnEvent;
-
-        _ = Cursor.Lock();
+        Cursor.Lock();
     }
 
-    private void OnEvent(Event evt)
+    protected override void OnEvent(Event evt)
     {
-        EventDispatcher dispatcher = new(evt);
-        dispatcher.Dispatch<WindowCloseEvent>(OnWindowClose);
+        screenshotProvider.OnEvent(evt);
+        stateProvider.OnEvent(evt);
     }
 
-    private void OnOpenColorLayer(Color color, Vector2 pickPosition)
+    protected override void OnUpdate()
     {
-        colorLayer.Color = color;
-        colorLayer.Position = pickPosition;
-
-        layerManager.PushOverlay(colorLayer);
-
-        UnlockCursor(pickPosition);
-    }
-
-    private void OnCloseColorLayer()
-    {
-        layerManager.PopOverlay(colorLayer);
-        RestoreCursor();
-    }
-
-    private void OnQuitColorLayer()
-    {
-        OnCloseColorLayer();
-        HideWindow();
-    }
-
-    private void UnlockCursor(Vector2? position = null)
-    {
-        lastCursorState = Cursor.Unlock(position);
-    }
-
-    private void RestoreCursor()
-    {
-        Cursor.RestoreState(lastCursorState);
-    }
-
-    private void OnWindowClose(WindowCloseEvent evt)
-    {
-        layerManager.PopOverlay(colorLayer);
+        screenshotProvider.OnUpdate();
     }
 }

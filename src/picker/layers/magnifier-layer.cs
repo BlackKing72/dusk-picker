@@ -5,8 +5,6 @@ namespace Black.DuskPicker;
 
 public class MagnifierLayer : Layer
 {
-    public event Action<Color, Vector2>? PickedColor;
-
     private readonly Shader magnifierShader;
     private readonly int uniformMousePosition;
     private readonly int uniformTextureSize;
@@ -23,12 +21,19 @@ public class MagnifierLayer : Layer
     private float magnifierZoom = 2.0f;
     private float magnifierRadius = 50.0f;
 
-    private readonly ScreenshotProviderLayer screenshotProvider;
+    private readonly StateProvider stateProvider;
+    private readonly ScreenshotProvider screenshotProvider;
     public readonly PickerOptions options;
 
-    public MagnifierLayer(ScreenshotProviderLayer screenshotProvider, PickerOptions? options = null)
+    public MagnifierLayer(
+        StateProvider stateProvider,
+        ScreenshotProvider screenshotProvider,
+        PickerOptions? options = null
+    )
     {
+        this.stateProvider = stateProvider;
         this.screenshotProvider = screenshotProvider;
+
         this.options = options ?? new PickerOptions();
 
         magnifierShader = LoadShader("assets/shaders/magnifier.fs");
@@ -69,7 +74,6 @@ public class MagnifierLayer : Layer
             Raylib.IsKeyDown(KeyboardKey.LeftShift) || Raylib.IsKeyDown(KeyboardKey.RightShift);
 
         Vector2 scale = srcRect.Size / dstRect.Size;
-        float radiusTexture = magnifierRadius * scale.X;
 
         localMousePosition = rawMousePosition - dstRect.Position;
         Vector2 texelMousePosition = localMousePosition * scale;
@@ -79,15 +83,15 @@ public class MagnifierLayer : Layer
         );
 
         localSnappedMousePosition = texelSnappedMousePosition / scale;
+
         if (Raylib.IsMouseButtonPressed(MouseButton.Left))
         {
-            Color color = Raylib.GetImageColor(
-                screenImage,
+            Color color = screenshotProvider.GetColorAt(
                 (int)texelSnappedMousePosition.X,
                 (int)texelSnappedMousePosition.Y
             );
 
-            PickedColor?.Invoke(color, localSnappedMousePosition);
+            stateProvider.SelectColor(color, localSnappedMousePosition);
         }
 
         float scrollDelta = Raylib.GetMouseWheelMove();

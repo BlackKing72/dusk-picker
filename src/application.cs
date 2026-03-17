@@ -30,6 +30,7 @@ public class Application : IDisposable
         layerManager = new LayerManager();
         guiManager = new GuiManager(false);
 
+        EventSystem.OnEvent += OnEvent;
         EventSystem.OnEvent += layerManager.OnEvent;
     }
 
@@ -51,6 +52,8 @@ public class Application : IDisposable
     {
         while (!Raylib.WindowShouldClose())
         {
+            OnUpdate();
+
             if (Raylib.IsKeyPressed(KeyboardKey.B))
             {
                 Raylib.ToggleBorderlessWindowed();
@@ -103,6 +106,10 @@ public class Application : IDisposable
     {
         Raylib.CloseWindow();
     }
+
+    protected virtual void OnEvent(Event evt) { }
+
+    protected virtual void OnUpdate() { }
 }
 
 #pragma warning restore CA1822

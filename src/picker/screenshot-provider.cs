@@ -3,14 +3,14 @@ using Shutter;
 
 namespace Black.DuskPicker;
 
-public class ScreenshotProviderLayer : Layer
+public class ScreenshotProvider
 {
-    private bool isDirty = false;
-
     public Texture2D ScreenTexture { get; private set; }
     public Image ScreenImage { get; private set; }
 
-    public override bool OnUpdate()
+    private bool isDirty = false;
+
+    public void OnUpdate()
     {
         if (isDirty)
         {
@@ -25,18 +25,28 @@ public class ScreenshotProviderLayer : Layer
             Raylib.SetTextureFilter(ScreenTexture, TextureFilter.Point);
             Raylib.SetTextureWrap(ScreenTexture, TextureWrap.Clamp);
         }
-
-        return false;
     }
 
-    public override void OnEvent(Event evt)
+    public void OnEvent(Event evt)
     {
         EventDispatcher dispatcher = new(evt);
         dispatcher.Dispatch<WindowOpenEvent>(OnWindowOpen);
         dispatcher.Dispatch<WindowCloseEvent>(OnWindowClose);
     }
 
-    public void OnWindowOpen(WindowOpenEvent evt)
+    public Color GetColorAt(int x, int y)
+    {
+        var w = ScreenImage.Width;
+        var h = ScreenImage.Height;
+
+        bool isInsideBounds = x >= 0 && y >= 0 && x <= w && y <= h;
+
+        return Raylib.IsImageValid(ScreenImage) && isInsideBounds
+            ? Raylib.GetImageColor(ScreenImage, x, y)
+            : Color.RayWhite;
+    }
+
+    private void OnWindowOpen(WindowOpenEvent evt)
     {
         // take a new screenshot and load it into an image.
         ShutterService screenshot = new();
@@ -50,7 +60,7 @@ public class ScreenshotProviderLayer : Layer
         isDirty = true;
     }
 
-    public void OnWindowClose(WindowCloseEvent evt)
+    private void OnWindowClose(WindowCloseEvent evt)
     {
         // unload image and texture to free up memory while closed.
         Raylib.UnloadImage(ScreenImage);
