@@ -14,7 +14,7 @@ public class StateProvider(PickerPalette colorPalette = PickerPalette.Xkcd)
     public Vector2 PickPosition { get; private set; } = Vector2.Zero;
 
     private readonly ColorDatabase colorDatabase = colorPalette.AsDatabase;
-    private Cursor.State lastCursorState;
+    private CursorState lastCursorState;
 
     public void SelectColor(Color color, Vector2 position)
     {

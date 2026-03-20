@@ -3,10 +3,10 @@ using Raylib_cs;
 
 namespace Black.DuskPicker;
 
+public record struct CursorState(bool WasVisible, bool WasEnabled, Vector2? Position = null);
+
 public static class Cursor
 {
-    public record struct State(bool WasVisible, bool WasEnabled, Vector2? Position = null);
-
     private static readonly Observable<bool> isVisisble = new(true);
     private static readonly Observable<bool> isEnabled = new(true);
 
@@ -42,9 +42,9 @@ public static class Cursor
         };
     }
 
-    public static State Lock(Vector2? position = null)
+    public static CursorState Lock(Vector2? position = null)
     {
-        State state = new(IsVisible, IsEnabled, position);
+        CursorState state = new(IsVisible, IsEnabled, position);
 
         IsVisible = false;
 
@@ -56,9 +56,9 @@ public static class Cursor
         return state;
     }
 
-    public static State Unlock(Vector2? position = null)
+    public static CursorState Unlock(Vector2? position = null)
     {
-        State state = new(IsVisible, IsEnabled, position);
+        CursorState state = new(IsVisible, IsEnabled, position);
 
         IsEnabled = true;
 
@@ -70,7 +70,7 @@ public static class Cursor
         return state;
     }
 
-    public static void RestoreState(State state)
+    public static void RestoreState(CursorState state)
     {
         IsVisible = state.WasVisible;
 
