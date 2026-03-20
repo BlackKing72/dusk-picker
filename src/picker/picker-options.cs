@@ -21,8 +21,8 @@ public static class PickerPaletteX
 
 public struct PickerOptions()
 {
-    public float ZoomSensitivity { get; init; } = 100.0f;
-    public float RadiusSensitivity { get; init; } = 1000.0f;
+    public float ZoomSensitivity { get; init; } = 0.5f;
+    public float RadiusSensitivity { get; init; } = 1.0f;
     public float MoveSensitivityAtMinZoom { get; init; } = 1.0f;
     public float MoveSensitivityAtMaxZoom { get; init; } = 0.05f;
 
