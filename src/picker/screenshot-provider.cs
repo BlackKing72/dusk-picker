@@ -9,12 +9,14 @@ public class ScreenshotProvider
     public Image ScreenImage { get; private set; }
 
     private bool isDirty = false;
+    private bool isLoaded = false;
 
     public void OnUpdate()
     {
         if (isDirty)
         {
             isDirty = false;
+            isLoaded = true;
 
             // ideally the texture should be updated only when the window open,
             // so the texture should be already unloaded at this point, but in case it's not.
@@ -36,14 +38,20 @@ public class ScreenshotProvider
 
     public Color GetColorAt(int x, int y)
     {
-        var w = ScreenImage.Width;
-        var h = ScreenImage.Height;
+        x = Math.Clamp(x, 0, ScreenImage.Width);
+        y = Math.Clamp(y, 0, ScreenImage.Height);
 
-        bool isInsideBounds = x >= 0 && y >= 0 && x <= w && y <= h;
+        if (!isLoaded)
+        {
+            Raylib.TraceLog(
+                TraceLogLevel.Warning,
+                $"Trying to get a pixel color, but the screenshot image was unloaded."
+            );
 
-        return Raylib.IsImageValid(ScreenImage) && isInsideBounds
-            ? Raylib.GetImageColor(ScreenImage, x, y)
-            : Color.RayWhite;
+            return Color.RayWhite;
+        }
+
+        return Raylib.GetImageColor(ScreenImage, x, y);
     }
 
     private void OnWindowOpen(WindowOpenEvent evt)
@@ -65,5 +73,9 @@ public class ScreenshotProvider
         // unload image and texture to free up memory while closed.
         Raylib.UnloadImage(ScreenImage);
         Raylib.UnloadTexture(ScreenTexture);
+
+        // raylib IsImageValid was returning true even after the image
+        // was unloaded. so using a simple flag instead.
+        isLoaded = false;
     }
 }
