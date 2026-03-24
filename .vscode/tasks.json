@@ -1,0 +1,41 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build (debug x64)",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "dusk-picker.csproj",
+                "-a",
+                "x64",
+                "-c",
+                "Debug"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+        },
+        {
+            "label": "Build (release x64)",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "dusk-picker.csproj",
+                "-a",
+                "x64",
+                "-c",
+                "Release"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+        }
+    ]
+}

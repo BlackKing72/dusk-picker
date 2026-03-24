@@ -1,0 +1,68 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Launch (Linux debug-x64)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build (debug x64)",
+            "program": "${workspaceFolder}/bin/Debug/net10.0/linux-x64/dusk-picker",
+            "args": [
+                "--server",
+                "--open",
+                "--port=1234"
+            ],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "integratedTerminal"
+        },
+        {
+            "name": ".NET Core Launch (Linux release-x64)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build (release x64)",
+            "program": "${workspaceFolder}/bin/Release/net10.0/linux-x64/dusk-picker",
+            "args": [
+                "--server",
+                "--open",
+                "--port=1234"
+            ],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "integratedTerminal"
+        },
+        {
+            "name": ".NET Core Launch (Windows debug-x64)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build (debug x64)",
+            "program": "${workspaceFolder}/bin/Debug/net10.0/win-x64/dusk-picker.exe",
+            "args": [
+                "--server",
+                "--open",
+                "--port=1234"
+            ],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "integratedTerminal"
+        },
+        {
+            "name": ".NET Core Launch (Windows release-x64)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build (release x64)",
+            "program": "${workspaceFolder}/bin/Release/net10.0/win-x64/dusk-picker.exe",
+            "args": [
+                "--server",
+                "--open",
+                "--port=1234"
+            ],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "integratedTerminal"
+        },
+    ]
+}
