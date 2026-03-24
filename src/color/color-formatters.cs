@@ -37,15 +37,18 @@ public class RGBColorFormatter : ColorFormatter
 
 public class HexColorFormatter(HexColorFormatter.Options? options = null) : ColorFormatter
 {
-    public record struct Options(bool ShowHashtag = true, bool Lowercase = true);
+    public record struct Options(bool ShowHashtag, bool Lowercase)
+    {
+        public static readonly Options Default = new() { ShowHashtag = true, Lowercase = true };
+    }
+
+    private readonly Options options = options ?? Options.Default;
 
     public override string Label => "Hex";
 
     public override string ToDisplayString(Color color)
     {
-        Options opt = options ?? new();
-
-        string prefix = opt.ShowHashtag ? "#" : "";
+        string prefix = options.ShowHashtag ? "#" : "";
 
         string r = Convert.ToString(color.R, 16);
         string g = Convert.ToString(color.G, 16);
@@ -53,7 +56,7 @@ public class HexColorFormatter(HexColorFormatter.Options? options = null) : Colo
 
         string hex = $"{prefix}{r:X2}{g:X2}{b:X2}";
 
-        if (!opt.Lowercase)
+        if (!options.Lowercase)
             hex = hex.ToUpperInvariant();
 
         return hex;
