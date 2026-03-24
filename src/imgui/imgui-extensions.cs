@@ -13,6 +13,12 @@ public static class ImGuiStyleX
             callback();
             ImGui.PopFont();
         }
+
+        public static unsafe void SetNextWindowSizeConstraints<T>(Vector2 sizeMin, Vector2 sizeMax, ImGuiSizeCallback customCallback, T userData)
+            where T : unmanaged
+        {
+            ImGui.SetNextWindowSizeConstraints(sizeMin, sizeMax, customCallback, (void*)&userData);
+        }
     }
     
     extension(ImGuiStylePtr style)

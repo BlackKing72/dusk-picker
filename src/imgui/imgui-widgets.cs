@@ -151,3 +151,27 @@ public static class ImGuiWidgets
         ImGui.PopStyleVar();
     }
 }
+
+public static unsafe class ImSizeConstrains
+{
+    public static void Square(ImGuiSizeCallbackData* data)
+    {
+        // square aspect ratio
+        data->DesiredSize.X = data->DesiredSize.Y = Math.Max(
+            data->DesiredSize.X,
+            data->DesiredSize.Y
+        );
+    }
+
+    public static void Video(ImGuiSizeCallbackData* data)
+    {
+        const float aspect_ratio = 16.0f / 9.0f;
+        data->DesiredSize.Y = (float)(int)(data->DesiredSize.X / aspect_ratio);
+    }
+
+    public static void AspectRatio(ImGuiSizeCallbackData* data)
+    {
+        float aspect_ratio = *(float*)data->UserData;
+        data->DesiredSize.Y = (float)(int)(data->DesiredSize.X / aspect_ratio);
+    }
+}
