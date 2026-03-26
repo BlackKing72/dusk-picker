@@ -16,12 +16,13 @@ public class ImGuiPopup(string id)
     public float MinHeight { get; set; } = 0;
     public float MaxWidth { get; set; } = float.MaxValue;
     public float MaxHeight { get; set; } = float.MaxValue;
+    public ImGuiWindowFlags Flags { get; set; } = ImGuiWindowFlags.None;
+    public Vector2 Position { get; set; } = Vector2.Zero;
 
     private readonly string popupId = $"popup__{id}";
 
     private bool isOpenRequested = false;
     private bool wasOpenLastFrame = false;
-    private Vector2 position = Vector2.Zero;
     private Vector2 lastWindowSize = -Vector2.One;
 
     public void OnGui(Action renderContentFn)
@@ -29,11 +30,12 @@ public class ImGuiPopup(string id)
         if (isOpenRequested)
         {
             isOpenRequested = false;
-            SetPositionAndAnchors();
             ImGui.OpenPopup(popupId);
         }
 
-        if (ImGui.BeginPopup(popupId, ImGuiWindowFlags.NoSavedSettings))
+        SetPositionAndAnchors();
+
+        if (ImGui.BeginPopup(popupId, Flags | ImGuiWindowFlags.NoSavedSettings))
         {
             lastWindowSize = ImGui.GetWindowSize();
             wasOpenLastFrame = true;
@@ -54,7 +56,7 @@ public class ImGuiPopup(string id)
     public void Open(Vector2 position)
     {
         isOpenRequested = true;
-        this.position = position;
+        this.Position = position;
     }
 
     public void Close()
@@ -78,7 +80,7 @@ public class ImGuiPopup(string id)
             lastWindowSize = workSize * 0.5f;
 
         // account for the margin in both the start and end position.
-        Vector2 min = position + margin;
+        Vector2 min = Position + margin;
         Vector2 max = min + lastWindowSize + margin;
 
         // flip means swap the location where the anchors is set.
@@ -91,7 +93,7 @@ public class ImGuiPopup(string id)
         Vector2 offset = new(x: flipAnchorX ? -Margin : Margin, y: flipAnchorY ? -Margin : Margin);
         Vector2 anchor = new(x: flipAnchorX ? 1.0f : 0.0f, y: flipAnchorY ? 1.0f : 0.0f);
 
-        ImGui.SetNextWindowPos(position + offset, ImGuiCond.Always, anchor);
+        ImGui.SetNextWindowPos(Position + offset, ImGuiCond.Always, anchor);
         ImGui.SetNextWindowSizeConstraints(new(MinWidth, MinHeight), new(MaxWidth, MaxHeight));
     }
 }
