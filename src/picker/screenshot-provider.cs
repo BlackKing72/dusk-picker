@@ -1,3 +1,4 @@
+using System.Numerics;
 using Raylib_cs;
 using Shutter;
 
@@ -35,6 +36,8 @@ public class ScreenshotProvider
         dispatcher.Dispatch<WindowOpenEvent>(OnWindowOpen);
         dispatcher.Dispatch<WindowCloseEvent>(OnWindowClose);
     }
+
+    public Color GetColorAt(Vector2 position) => GetColorAt((int)position.X, (int)position.Y);
 
     public Color GetColorAt(int x, int y)
     {
