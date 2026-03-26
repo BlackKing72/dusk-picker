@@ -17,13 +17,25 @@ public class Picker : Application
         BackgroundLayer backgroundLayer = new(screenshotProvider);
         MagnifierLayer magnifierLayer = new(stateProvider, screenshotProvider, pickerOptions);
         ColorInfoLayer colorLayer = new(stateProvider);
+        ColorPreviewLayer quickViewLayer = new(stateProvider, screenshotProvider);
 
         layerManager.PushLayer(inputHandlerLayer);
         layerManager.PushLayer(backgroundLayer);
         layerManager.PushLayer(magnifierLayer);
+        layerManager.PushLayer(quickViewLayer);
 
-        stateProvider.OnColorDismissed += () => layerManager.PopLayer(colorLayer);
-        stateProvider.OnColorSelected += () => layerManager.PushLayer(colorLayer);
+        stateProvider.OnColorDismissed += () =>
+        {
+            layerManager.PopOverlay(colorLayer);
+            layerManager.PushLayer(quickViewLayer);
+        };
+
+        stateProvider.OnColorSelected += () =>
+        {
+            layerManager.PopLayer(quickViewLayer);
+            layerManager.PushOverlay(colorLayer);
+        };
+
         stateProvider.OnQuitRequested += this.HideWindow;
 
         Cursor.Lock();

@@ -1,4 +1,3 @@
-using System.Numerics;
 using Hexa.NET.ImGui;
 using IconFonts;
 using Raylib_cs;
@@ -29,10 +28,13 @@ public class ColorInfoLayer : Layer
 
     public override void OnAttach()
     {
-        color = stateProvider.PickColor;
-        similarColor = stateProvider.SimilarColor;
+        (color, similarColor) = stateProvider.PickColorInfo;
+        popup.Open(stateProvider.PickTexPosition);
+    }
 
-        popup.Open(stateProvider.PickPosition);
+    public override void OnDetach()
+    {
+        popup.Close();
     }
 
     // block the update on other layers.

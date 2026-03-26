@@ -1,3 +1,5 @@
+using Raylib_cs;
+
 namespace Black.DuskPicker;
 
 public abstract class Event
@@ -9,9 +11,42 @@ public sealed class WindowOpenEvent : Event { }
 
 public sealed class WindowCloseEvent : Event { }
 
-public static class EventSystem
+public sealed class WindowFocusEvent(bool focused) : Event
+{
+    public bool Focused { get; set; } = focused;
+}
+
+public class EventSystem
 {
     public static event Action<Event>? OnEvent;
+
+    private static readonly Observable<bool> isWindowFocused = new(false);
+    private static readonly Observable<bool> isWindowHidden = new(false);
+
+    static EventSystem()
+    {
+        isWindowFocused.Changed += static focused =>
+        {
+            RaiseEvent(new WindowFocusEvent(focused));
+        };
+
+        isWindowHidden.Changed += static hidden =>
+        {
+            if (hidden)
+                RaiseEvent(new WindowCloseEvent());
+            else
+                RaiseEvent(new WindowOpenEvent());
+        };
+
+        isWindowFocused.SetWithoutNotify(Raylib.IsWindowFocused());
+        isWindowHidden.SetWithoutNotify(Raylib.IsWindowHidden());
+    }
+
+    public static void OnUpdate()
+    {
+        isWindowFocused.Value = Raylib.IsWindowFocused();
+        isWindowHidden.Value = Raylib.IsWindowHidden();
+    }
 
     public static void RaiseEvent(Event evt)
     {

@@ -1,5 +1,6 @@
 #pragma warning disable CA1822
 
+using System.Diagnostics;
 using Raylib_cs;
 
 namespace Black.DuskPicker;
@@ -16,22 +17,31 @@ public class Application : IDisposable
         Raylib.SetConfigFlags(ConfigFlags.HiddenWindow);
         Raylib.SetConfigFlags(ConfigFlags.TopmostWindow);
 
-        Raylib.InitWindow(960, 540, "Color Picker");
+#if DEBUG
+        // Enable all logs in debug builds.
+        Raylib.SetTraceLogLevel(TraceLogLevel.All);
+#endif
+
+
+        // Todo: How to handle multiple screens at once??
+        // Maybe make a giant window that covers all screens or one window for
+        // each screen will be better.
+        int screenWidth = Raylib.GetScreenWidth();
+        int screenHeight = Raylib.GetScreenHeight();
+        Raylib.InitWindow(screenWidth, screenHeight, "Dusk Picker");
 
         var iconData = Embedded.ReadBytes("assets/dusk.png");
         var iconImage = Raylib.LoadImageFromMemory(".png", iconData);
         Raylib.SetWindowIcon(iconImage);
 
         Raylib.SetExitKey(KeyboardKey.F10);
-        Raylib.SetWindowState(ConfigFlags.BorderlessWindowMode);
-        Raylib.SetWindowPosition(0, 0);
+        Raylib.SetTargetFPS(Raylib.GetMonitorRefreshRate(0));
         Raylib.EnableEventWaiting();
 
         layerManager = new LayerManager();
         guiManager = new GuiManager(false);
 
-        EventSystem.OnEvent += OnEvent;
-        EventSystem.OnEvent += layerManager.OnEvent;
+        EventSystem.OnEvent += OnEventInternal;
     }
 
     public void Dispose()
@@ -42,7 +52,7 @@ public class Application : IDisposable
 
     protected virtual void Dispose(bool disposing = false)
     {
-        EventSystem.OnEvent -= layerManager.OnEvent;
+        EventSystem.OnEvent -= OnEventInternal;
 
         guiManager.Dispose();
         layerManager.Dispose();
@@ -52,17 +62,16 @@ public class Application : IDisposable
     {
         while (!Raylib.WindowShouldClose())
         {
-            OnUpdate();
+            EventSystem.OnUpdate();
 
-            if (Raylib.IsKeyPressed(KeyboardKey.B))
+            if (Raylib.IsWindowHidden())
             {
-                Raylib.ToggleBorderlessWindowed();
-
-                if (Raylib.IsWindowState(ConfigFlags.BorderlessWindowMode))
-                {
-                    Raylib.SetWindowPosition(0, 0);
-                }
+                // EndDrawing() needs to be called, whitout this the process never sleeps.
+                Raylib.EndDrawing();
+                continue;
             }
+
+            OnUpdate();
 
             Raylib.BeginDrawing();
             Raylib.ClearBackground(new Color(0, 0, 0, 0));
@@ -75,15 +84,23 @@ public class Application : IDisposable
             layerManager.OnGui();
             guiManager.EndGui();
 
+#if DEBUG
+            Raylib.DrawRectangle(3, 3, 96, 24, Color.Black with { A = 200 });
+            Raylib.DrawFPS(5, 5);
+#endif
+
             Raylib.EndDrawing();
         }
     }
+
+    protected virtual void OnEvent(Event evt) { }
+
+    protected virtual void OnUpdate() { }
 
     public void ShowWindow()
     {
         // The event is called before the window opens, so the listeners can consume
         // the event before the window draws the first frame.
-        EventSystem.RaiseEvent(new WindowOpenEvent());
         Raylib.ClearWindowState(ConfigFlags.HiddenWindow);
 
         // Disable the wait for events, because imgui needed to be updated every frame.
@@ -97,8 +114,6 @@ public class Application : IDisposable
     {
         // When the window is hidden, it's fine to wait for events.
         Raylib.EnableEventWaiting();
-
-        EventSystem.RaiseEvent(new WindowCloseEvent());
         Raylib.SetWindowState(ConfigFlags.HiddenWindow);
     }
 
@@ -107,9 +122,30 @@ public class Application : IDisposable
         Raylib.CloseWindow();
     }
 
-    protected virtual void OnEvent(Event evt) { }
+    private void OnEventInternal(Event evt)
+    {
+        EventDispatcher dispatcher = new(evt);
+        dispatcher.Dispatch<WindowFocusEvent>(OnWindowFoucsEvent);
 
-    protected virtual void OnUpdate() { }
+        OnEvent(evt);
+
+        layerManager.OnEvent(evt);
+    }
+
+    private void OnWindowFoucsEvent(WindowFocusEvent evt)
+    {
+        // This makes sure the window is the topmost window (i.e: over pip and overlays windows)
+        // This also makes it harder to debug the app, so disable it when in debugging.
+#if DEBUG
+        if (Debugger.IsAttached)
+            return;
+#endif
+
+        if (evt.Focused)
+            Raylib.SetWindowState(ConfigFlags.TopmostWindow);
+        else
+            Raylib.ClearWindowState(ConfigFlags.TopmostWindow);
+    }
 }
 
 #pragma warning restore CA1822

@@ -16,8 +16,8 @@ public class MagnifierLayer : Layer
     private readonly ShaderUniform uniformZoom = new("u_zoom");
 
     private Vector2 rawMousePosition = Vector2.Zero;
-    private Vector2 texelSnappedMousePosition;                  // the mouse position in relation to the zoomed texture.
-    private Vector2 localSnappedMousePosition = Vector2.Zero;   // the mouse position in relation to the current window.
+    private Vector2 texelSnappedMousePosition; // the mouse position in relation to the zoomed texture.
+    private Vector2 localSnappedMousePosition = Vector2.Zero; // the mouse position in relation to the current window.
     private float magnifierZoom = 2.0f;
     private float magnifierRadius = 50.0f;
 
@@ -53,8 +53,16 @@ public class MagnifierLayer : Layer
         // Draw Magnifying Glass Effect
         Raylib.BeginShaderMode(magnifierShader);
 
-        uniformMousePosition.SetValue(magnifierShader, texelSnappedMousePosition, ShaderUniformDataType.Vec2);
-        uniformTextureSize.SetValue(magnifierShader, screenTexture.Dimensions, ShaderUniformDataType.Vec2);
+        uniformMousePosition.SetValue(
+            magnifierShader,
+            texelSnappedMousePosition,
+            ShaderUniformDataType.Vec2
+        );
+        uniformTextureSize.SetValue(
+            magnifierShader,
+            screenTexture.Dimensions,
+            ShaderUniformDataType.Vec2
+        );
         uniformRadius.SetValue(magnifierShader, magnifierRadius, ShaderUniformDataType.Float);
         uniformZoom.SetValue(magnifierShader, magnifierZoom, ShaderUniformDataType.Float);
 
@@ -114,6 +122,9 @@ public class MagnifierLayer : Layer
         );
 
         localSnappedMousePosition = texelSnappedMousePosition / scale;
+
+        stateProvider.MouseTexPosition = texelSnappedMousePosition;
+        stateProvider.MousePosition = localSnappedMousePosition;
     }
 
     private void HandleMouseInput()
