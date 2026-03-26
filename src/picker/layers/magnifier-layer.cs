@@ -10,10 +10,10 @@ public class MagnifierLayer : Layer
     private readonly PickerOptions options;
 
     private readonly Shader magnifierShader;
-    private readonly ShaderUniform uniformMousePosition = new("u_mousePosition");
-    private readonly ShaderUniform uniformTextureSize = new("u_textureSize");
-    private readonly ShaderUniform uniformRadius = new("u_radius");
-    private readonly ShaderUniform uniformZoom = new("u_zoom");
+    private ShaderUniform uniformMousePosition = new("u_mousePosition");
+    private ShaderUniform uniformTextureSize = new("u_textureSize");
+    private ShaderUniform uniformRadius = new("u_radius");
+    private ShaderUniform uniformZoom = new("u_zoom");
 
     private Vector2 rawMousePosition = Vector2.Zero;
     private Vector2 texelSnappedMousePosition; // the mouse position in relation to the zoomed texture.
