@@ -70,6 +70,9 @@ public class ScreenshotProvider
 
     private void OnWindowClose(WindowCloseEvent evt)
     {
+        if (!isLoaded)
+            return;
+
         // unload image and texture to free up memory while closed.
         Raylib.UnloadImage(ScreenImage);
         Raylib.UnloadTexture(ScreenTexture);
