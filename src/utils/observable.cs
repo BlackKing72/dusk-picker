@@ -4,21 +4,22 @@ public class Observable<T>(T initialValue)
 {
     public event Action<T>? Changed;
 
+    private T value = initialValue;
     public T Value
     {
-        get => field;
+        get => value;
         set
         {
-            var comparer = EqualityComparer<T>.Default;
-            if (comparer.Equals(field, value))
+            EqualityComparer<T> comparer = EqualityComparer<T>.Default;
+            if (comparer.Equals(this.value, value))
             {
                 return;
             }
 
-            field = value;
+            this.value = value;
             Changed?.Invoke(value);
         }
-    } = initialValue;
+    }
 
     public static implicit operator T(Observable<T> obs)
     {
@@ -28,5 +29,10 @@ public class Observable<T>(T initialValue)
     public static explicit operator Observable<T>(T value)
     {
         return new(value);
+    }
+
+    public void SetWithoutNotify(T value)
+    {
+        this.value = value;
     }
 }
