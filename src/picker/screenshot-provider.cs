@@ -41,8 +41,8 @@ public class ScreenshotProvider
 
     public Color GetColorAt(int x, int y)
     {
-        x = Math.Clamp(x, 0, ScreenImage.Width);
-        y = Math.Clamp(y, 0, ScreenImage.Height);
+        x = Math.Clamp(x, 0, ScreenImage.Width - 1);
+        y = Math.Clamp(y, 0, ScreenImage.Height - 1);
 
         if (!isLoaded)
         {
