@@ -1,4 +1,5 @@
-#pragma warning disable CA1822
+#pragma warning disable CA1822      // CA1822: Mark members as static
+#pragma warning disable IDE0130     // IDE0130: Namespace does not match folder structure
 
 using System.Diagnostics;
 using Raylib_cs;
@@ -15,20 +16,30 @@ public class Application : IDisposable
         Raylib.SetConfigFlags(ConfigFlags.UndecoratedWindow);
         Raylib.SetConfigFlags(ConfigFlags.TransparentWindow);
         Raylib.SetConfigFlags(ConfigFlags.HiddenWindow);
+
+        // Todo: Fix topmost don't work on multi-screen setups
+        // On PopOS the window still behind the top bar, this don't happen
+        // when I have a single monitor connected.
+        // This makes sure the window is the topmost window (i.e: over pip and overlays windows)
         Raylib.SetConfigFlags(ConfigFlags.TopmostWindow);
 
 #if DEBUG
+        // This also makes it harder to debug the app, so disable it when in debugging.
+        Raylib.ClearWindowState(ConfigFlags.TopmostWindow);
+
         // Enable all logs in debug builds.
         Raylib.SetTraceLogLevel(TraceLogLevel.All);
 #endif
 
-
-        // Todo: How to handle multiple screens at once??
-        // Maybe make a giant window that covers all screens or one window for
-        // each screen will be better.
         int screenWidth = Raylib.GetScreenWidth();
         int screenHeight = Raylib.GetScreenHeight();
         Raylib.InitWindow(screenWidth, screenHeight, "Dusk Picker");
+
+        // This has to run after the window is created, otherwise the second
+        // monitor is not listed as connected.
+        var workArea = RLMonitors.GetTotalWorkArea();
+        Raylib.SetWindowPosition(workArea.Position);
+        Raylib.SetWindowSize(workArea.Size);
 
         var iconData = Embedded.ReadBytes("assets/dusk.png");
         var iconImage = Raylib.LoadImageFromMemory(".png", iconData);
@@ -113,8 +124,8 @@ public class Application : IDisposable
     public void HideWindow()
     {
         // When the window is hidden, it's fine to wait for events.
-        Raylib.EnableEventWaiting();
         Raylib.SetWindowState(ConfigFlags.HiddenWindow);
+        Raylib.EnableEventWaiting();
     }
 
     public void CloseWindow()
@@ -136,10 +147,10 @@ public class Application : IDisposable
     {
         // This makes sure the window is the topmost window (i.e: over pip and overlays windows)
         // This also makes it harder to debug the app, so disable it when in debugging.
-#if DEBUG
-        if (Debugger.IsAttached)
-            return;
-#endif
+        // #if DEBUG
+        //         if (Debugger.IsAttached)
+        //             return;
+        // #endif
 
         if (evt.Focused)
             Raylib.SetWindowState(ConfigFlags.TopmostWindow);
@@ -148,4 +159,5 @@ public class Application : IDisposable
     }
 }
 
-#pragma warning restore CA1822
+#pragma warning restore CA1822      // CA1822: Mark members as static
+#pragma warning restore IDE0130     // IDE0130: Namespace does not match folder structure

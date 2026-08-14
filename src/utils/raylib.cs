@@ -7,6 +7,9 @@ public static class RaylibX
 {
     extension(Raylib)
     {
+        public static void SetWindowPosition(Vector2 position) => Raylib.SetWindowPosition((int)position.X, (int)position.Y);
+        public static void SetWindowSize(Vector2 size) => Raylib.SetWindowSize((int)size.X, (int)size.Y);
+
         // info: this extensions are generating a false warning (CS8620 - "Argument cannot be used for parameter due to
         // differences in the nullability of reference types"). apparently this is a know issue in roslyn.
         // see: https://github.com/dotnet/runtime/issues/121597 and https://github.com/dotnet/roslyn/issues/80024
