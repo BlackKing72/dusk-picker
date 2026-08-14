@@ -21,7 +21,7 @@ public class ColorPreviewLayer : Layer
             MinWidth = 300,
             MaxWidth = 300,
 
-            Flags = ImGuiWindowFlags.NoInputs,
+            Flags = ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoSavedSettings,
         };
     }
 
